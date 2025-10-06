@@ -2,6 +2,7 @@ import api from '@/shared/lib/api';
 import type { Role } from '@/shared/types/auth';
 import type { ListedUser } from '@/features/users/store/slice';
 import type { UserStatus } from '@/features/users/store/slice';
+import { codeToId, normalizeStatus } from '@/features/users/misc/status';
 
 export interface UpdateUserPayload {
   id: string;
@@ -15,8 +16,10 @@ async function list(): Promise<ListedUser[]> {
   return data;
 }
 
-async function updateStatus(userId: string, status: UserStatus): Promise<ListedUser> {
-  const { data } = await api.patch(`/users/${userId}/status`, { status });
+async function updateStatus(userId: string, status: UserStatus | number | string): Promise<ListedUser> {
+  // backend expects numeric enum; accept code or id here
+  const id = typeof status === 'number' || /^\d+$/.test(String(status)) ? Number(status) : codeToId(normalizeStatus(status as any));
+  const { data } = await api.patch(`/users/${userId}/status`, { status: id });
   return data;
 }
 

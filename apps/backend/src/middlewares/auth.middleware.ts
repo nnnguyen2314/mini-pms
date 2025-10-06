@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyJwt } from '../utils/jwt';
+import { verifyAccessToken } from '../utils/jwt';
 import { fetchUserData } from '../repositories/user.repository';
 import { UserStatus } from '../entities/user';
 
@@ -24,9 +24,10 @@ export const authMiddleware = async (request: any, response: any, next: any) => 
     }
 
     try {
-        const payload: any = verifyJwt(token);
+        const payload: any = verifyAccessToken(token);
         if (!payload) {
-            return response.status(403).json({ message: 'Forbidden' });
+            response.status(403).json({ message: 'Forbidden' });
+            return;
         }
         request.userId = payload.sub;
         // Load user from DB

@@ -19,7 +19,7 @@ describe('Header', () => {
   test('shows avatar when logged in', async () => {
     initStore.dispatch(
       authSliceActions.setAuth({
-        user: { id: '1', email: 'member@example.com', name: 'Member', role: 'Member' },
+        user: { id: '1', email: 'member@example.com', name: 'Member', roles: ['MEMBER'] },
         token: 'token',
       })
     );

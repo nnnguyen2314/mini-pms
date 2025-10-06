@@ -2,8 +2,9 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '@/shared/store';
 import type { Role } from '@/shared/types/auth';
 import usersService, { UpdateUserPayload } from '@/shared/services/users';
+import { normalizeStatus } from '../misc/status';
 
-export type UserStatus = 'ACTIVE' | 'INACTIVE';
+export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'DISABLED' | 'REACTIVATED';
 
 export interface ListedUser {
   id: string;
@@ -127,8 +128,8 @@ const slice = createSlice({
         const normalize = (u: ListedUser): ListedUser => ({
           ...u,
           // normalize to uppercase enums to match filters
-          roles: (u.roles || []).map((r) => String(r).toUpperCase() as any),
-          status: String(u.status).toUpperCase() as any,
+          roles: ((u.roles && u.roles.length > 0 ? u.roles : ((u as any).role ? [(u as any).role] : ['MEMBER'])) as any[]).map((r) => String(r).toUpperCase() as any),
+          status: normalizeStatus((u as any).status as any),
         });
         state.items = (action.payload as ListedUser[]).map(normalize);
       })
@@ -140,8 +141,8 @@ const slice = createSlice({
         const incoming = action.payload as ListedUser;
         const updated: ListedUser = {
           ...incoming,
-          roles: (incoming.roles || []).map((r) => String(r).toUpperCase() as any),
-          status: String(incoming.status).toUpperCase() as any,
+          roles: ((incoming.roles && incoming.roles.length > 0 ? incoming.roles : ((incoming as any).role ? [(incoming as any).role] : ['MEMBER'])) as any[]).map((r) => String(r).toUpperCase() as any),
+          status: normalizeStatus((incoming as any).status as any),
         };
         const idx = state.items.findIndex(u => u.id === updated.id);
         if (idx >= 0) state.items[idx] = updated;
@@ -150,8 +151,8 @@ const slice = createSlice({
         const incoming = action.payload as ListedUser;
         const updated: ListedUser = {
           ...incoming,
-          roles: (incoming.roles || []).map((r) => String(r).toUpperCase() as any),
-          status: String(incoming.status).toUpperCase() as any,
+          roles: ((incoming.roles && incoming.roles.length > 0 ? incoming.roles : ((incoming as any).role ? [(incoming as any).role] : ['MEMBER'])) as any[]).map((r) => String(r).toUpperCase() as any),
+          status: normalizeStatus((incoming as any).status as any),
         };
         const idx = state.items.findIndex(u => u.id === updated.id);
         if (idx >= 0) state.items[idx] = updated;
@@ -161,8 +162,8 @@ const slice = createSlice({
         const incoming = action.payload as ListedUser;
         const updated: ListedUser = {
           ...incoming,
-          roles: (incoming.roles || []).map((r) => String(r).toUpperCase() as any),
-          status: String(incoming.status).toUpperCase() as any,
+          roles: ((incoming.roles && incoming.roles.length > 0 ? incoming.roles : ((incoming as any).role ? [(incoming as any).role] : ['MEMBER'])) as any[]).map((r) => String(r).toUpperCase() as any),
+          status: normalizeStatus((incoming as any).status as any),
         };
         const idx = state.items.findIndex(u => u.id === updated.id);
         if (idx >= 0) state.items[idx] = updated;

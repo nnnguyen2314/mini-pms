@@ -133,3 +133,67 @@ Learn more about the power of Turborepo:
 - [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
 - [Configuration Options](https://turborepo.com/docs/reference/configuration)
 - [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+
+---
+
+# Logging (stdout/stderr)
+
+All runtime logs are emitted to stdout/stderr so they can be collected by Docker, ELK, CloudWatch, etc.
+
+- Backend (Express):
+  - Structured JSON request logs using morgan.
+    - Successful requests (status < 400) are written to stdout.
+    - Client/server errors (status >= 400) are written to stderr.
+  - Unhandled errors (unhandledRejection/uncaughtException) are logged as JSON to stderr.
+  - Server startup event is logged as a JSON line.
+- Nginx:
+  - access_log is set to /dev/stdout.
+  - error_log is set to /dev/stderr.
+
+Notes for aggregators:
+- ELK: Use a JSON parser for the backend stream to extract fields (level, method, url, status, response_time_ms, etc.). The Nginx access log uses the "main" log_format and is not JSON by default.
+- CloudWatch: When deployed on ECS/EKS or EC2 with the CloudWatch agent or FireLens, container stdout/stderr will be shipped automatically when configured with the awslogs/FireLens driver.
+
+# Sentry (Error and Performance Monitoring)
+
+This project is pre-wired to send backend (Express) errors and traces to Sentry.
+
+## 1) Create a Sentry project and get the DSN
+- Sign up / log in at https://sentry.io
+- Create a new project (Platform: Node.js)
+- Copy the DSN string (looks like https://examplePublicKey@o0.ingest.sentry.io/0)
+
+## 2) Configure environment variables
+Set the following for the backend service (docker-compose.yml has placeholders):
+
+- SENTRY_DSN: your Sentry DSN
+- SENTRY_ENV: environment name (e.g., development, staging, production)
+- SENTRY_TRACES_SAMPLE_RATE: optional, default 0.05 (5%)
+- SENTRY_RELEASE: optional, your release identifier (e.g., git sha)
+
+Example (docker-compose.yml):
+
+```
+services:
+  backend:
+    environment:
+      SENTRY_DSN: "<your DSN>"
+      SENTRY_ENV: "production"
+      SENTRY_TRACES_SAMPLE_RATE: "0.05"
+```
+
+If running locally without Docker, export them in your shell or .env file used by the backend.
+
+## 3) Verify integration
+- Start the stack (docker compose up --build) or run backend locally.
+- Open http://localhost:5000/debug/error (only available when NODE_ENV !== 'production').
+- This route deliberately throws to generate a Sentry event. Check your Sentry project for the new issue.
+
+You can also review the code:
+- apps/backend/src/sentry.ts initializes Sentry.
+- apps/backend/src/index.ts wires Sentry request/tracing handlers and error handler.
+
+## Notes
+- If SENTRY_DSN is empty, the SDK stays effectively no-op; the app still runs.
+- Sampling: Adjust SENTRY_TRACES_SAMPLE_RATE to control performance event volume.
+- Frontend: If you want browser-side monitoring, add @sentry/nextjs later; current CSP only sets frame-ancestors, so it won’t block Sentry requests. Add connect-src for Sentry domains if you later introduce a restrictive CSP.

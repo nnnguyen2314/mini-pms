@@ -9,9 +9,9 @@ export function DashboardMenu({ role }: { role: Role }) {
   const toHref = (label: string) => {
     switch (label) {
       case 'Users': return '/users';
-      case 'Projects': return '/dashboard';
+      case 'Projects': return '/projects';
       case 'Tasks': return '/dashboard';
-      case 'Workspaces': return '/dashboard';
+      case 'Workspaces': return '/workspaces';
       default: return '/dashboard';
     }
   };

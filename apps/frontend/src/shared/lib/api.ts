@@ -1,10 +1,23 @@
 import axios from 'axios';
 
-const rawBase = (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
-const baseURL = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
+// Determine base URL for API
+// Priority:
+// 1) NEXT_PUBLIC_API_BASE_URL (or NEXT_PUBLIC_API_URL) if provided
+// 2) If running in browser and no env provided, use relative "/api" so Nginx can proxy
+// 3) Fallback to http://localhost:5000/api for SSR/tests/dev
+const envBase = (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || '').trim();
+let computedBase: string;
+if (envBase) {
+  const trimmed = envBase.replace(/\/+$/, '');
+  computedBase = trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+} else if (typeof window !== 'undefined') {
+  computedBase = '/api';
+} else {
+  computedBase = 'http://localhost:5000/api';
+}
 
 export const api = axios.create({
-  baseURL,
+  baseURL: computedBase,
   withCredentials: true,
 });
 
@@ -20,7 +33,7 @@ api.interceptors.request.use((config) => {
         const token = auth?.token as string | null;
         if (token) {
           config.headers = config.headers || {};
-          config.headers.Authorization = `Bearer ${token}`;
+          (config.headers as any).Authorization = `Bearer ${token}`;
         }
       }
     }

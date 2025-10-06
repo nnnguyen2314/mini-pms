@@ -30,7 +30,7 @@ export default function UsersContainer() {
     let list: ListedUser[] = users.slice();
     // Apply filters
     if (filters.status && filters.status !== 'ALL') list = list.filter(u => u.status === filters.status);
-    if (filters.role && filters.role !== 'ALL') list = list.filter(u => (u.roles ?? []).includes(filters.role!));
+    if (filters.role && filters.role !== 'ALL') list = list.filter(u => (u.roles ?? []).includes(filters.role as any));
     if (filters.query) {
       const q = filters.query.toLowerCase();
       list = list.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));

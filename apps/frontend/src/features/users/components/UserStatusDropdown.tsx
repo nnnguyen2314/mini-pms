@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { Menu, MenuItem, Chip, CircularProgress } from '@mui/material';
 import type { ListedUser, UserStatus } from '../store/slice';
 import { updateUserStatus } from '../store/slice';
+import { codeToLabel } from '../misc/status';
 
 export default function StatusDropdown({ user }: { user: ListedUser }) {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ export default function StatusDropdown({ user }: { user: ListedUser }) {
       <Chip
         size="small"
         color={user.status === 'ACTIVE' ? 'success' : 'default'}
-        label={loading ? <CircularProgress size={12} /> : user.status}
+        label={loading ? <CircularProgress size={12} /> : codeToLabel(user.status)}
         onClick={(e) => setAnchorEl(e.currentTarget)}
         variant="outlined"
       />
