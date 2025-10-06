@@ -1,0 +1,49 @@
+name: Docker Build (validate)
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch: {}
+
+jobs:
+  build-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.backend
+          push: false
+          load: true
+          tags: mini-pms-backend:ci
+
+      - name: Build frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.frontend
+          push: false
+          load: true
+          tags: mini-pms-frontend:ci
+
+      - name: Optionally push to GHCR (requires secrets)
+        if: ${{ github.ref == 'refs/heads/main' && (secrets.GITHUB_TOKEN != '' && secrets.CR_PAT != '') }}
+        env:
+          REGISTRY: ghcr.io
+          IMAGE_NAME_BACKEND: ${{ github.repository }}/backend
+          IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
+        run: |
+          echo "Login to GHCR"
+          echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker tag mini-pms-backend:ci ghcr.io/${IMAGE_NAME_BACKEND}:latest
+          docker tag mini-pms-frontend:ci ghcr.io/${IMAGE_NAME_FRONTEND}:latest
+          docker push ghcr.io/${IMAGE_NAME_BACKEND}:latest
+          docker push ghcr.io/${IMAGE_NAME_FRONTEND}:latest

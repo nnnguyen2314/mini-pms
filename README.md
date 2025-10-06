@@ -136,6 +136,21 @@ Learn more about the power of Turborepo:
 
 ---
 
+# GitHub CI/CD
+
+This repository includes GitHub Actions workflows for CI and Docker build validation.
+
+- CI (.github/workflows/ci.yml):
+  - Triggers on pushes and pull requests to main/master.
+  - Installs dependencies with Yarn, runs linting, type checks, builds via Turborepo, runs frontend unit tests (Jest), and builds the backend TypeScript.
+- Docker Build (.github/workflows/docker-build.yml):
+  - Validates both Dockerfiles by building images on PRs.
+  - Optionally pushes images to GitHub Container Registry (GHCR) when a Personal Access Token is provided in repository secrets.
+
+To enable container publishing (optional):
+- Create a fine-scoped GitHub Personal Access Token with the `packages:write` permission and add it as `CR_PAT` secret in your repository settings.
+- The workflow will push `latest` tags for backend and frontend when running on the `main` branch.
+
 # Logging (stdout/stderr)
 
 All runtime logs are emitted to stdout/stderr so they can be collected by Docker, ELK, CloudWatch, etc.
