@@ -99,10 +99,10 @@ export const workspacesActions = slice.actions;
 export default slice.reducer;
 
 export const selectWorkspacesState = (s: RootState) => (s as any).workspaces as State;
-export const selectWorkspaces = (s: RootState) => selectWorkspacesState(s).items;
-export const selectWorkspacesLoading = (s: RootState) => selectWorkspacesState(s).loading;
-export const selectWorkspacesSort = (s: RootState) => selectWorkspacesState(s).sort;
-export const selectWorkspacesFilters = (s: RootState) => selectWorkspacesState(s).filters;
-export const selectEditingWorkspace = (s: RootState) => selectWorkspacesState(s).editing;
-export const selectStatusEditingId = (s: RootState) => selectWorkspacesState(s).statusEditingId;
-export const selectAddUsersWorkspaceId = (s: RootState) => selectWorkspacesState(s).addUsersWorkspaceId;
+export const selectWorkspaces = (s: RootState) => selectWorkspacesState(s)?.items;
+export const selectWorkspacesLoading = (s: RootState) => selectWorkspacesState(s)?.loading;
+export const selectWorkspacesSort = (s: RootState) => selectWorkspacesState(s)?.sort;
+export const selectWorkspacesFilters = (s: RootState) => selectWorkspacesState(s)?.filters;
+export const selectEditingWorkspace = (s: RootState) => selectWorkspacesState(s)?.editing;
+export const selectStatusEditingId = (s: RootState) => selectWorkspacesState(s)?.statusEditingId;
+export const selectAddUsersWorkspaceId = (s: RootState) => selectWorkspacesState(s)?.addUsersWorkspaceId;

@@ -99,10 +99,10 @@ export const projectsActions = slice.actions;
 export default slice.reducer;
 
 export const selectProjectsState = (s: RootState) => (s as any).projects as State;
-export const selectProjects = (s: RootState) => selectProjectsState(s).items;
-export const selectProjectsLoading = (s: RootState) => selectProjectsState(s).loading;
-export const selectProjectsSort = (s: RootState) => selectProjectsState(s).sort;
-export const selectProjectsFilters = (s: RootState) => selectProjectsState(s).filters;
-export const selectEditingProject = (s: RootState) => selectProjectsState(s).editing;
-export const selectProjectStatusEditingId = (s: RootState) => selectProjectsState(s).statusEditingId;
-export const selectAddNewProjectOpen = (s: RootState) => selectProjectsState(s).addNewOpen;
+export const selectProjects = (s: RootState) => selectProjectsState(s)?.items;
+export const selectProjectsLoading = (s: RootState) => selectProjectsState(s)?.loading;
+export const selectProjectsSort = (s: RootState) => selectProjectsState(s)?.sort;
+export const selectProjectsFilters = (s: RootState) => selectProjectsState(s)?.filters;
+export const selectEditingProject = (s: RootState) => selectProjectsState(s)?.editing;
+export const selectProjectStatusEditingId = (s: RootState) => selectProjectsState(s)?.statusEditingId;
+export const selectAddNewProjectOpen = (s: RootState) => selectProjectsState(s)?.addNewOpen;

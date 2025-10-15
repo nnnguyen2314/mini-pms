@@ -178,9 +178,9 @@ const slice = createSlice({
 export const { reducer: usersReducer, actions: usersActions } = slice;
 
 export const selectUsersState = (state: RootState) => state.users as UsersState;
-export const selectUsers = (state: RootState) => selectUsersState(state).items;
-export const selectUsersLoading = (state: RootState) => selectUsersState(state).loading;
-export const selectUsersFilters = (state: RootState) => selectUsersState(state).filters;
-export const selectUsersSort = (state: RootState) => selectUsersState(state).sort;
-export const selectEditingUser = (state: RootState) => selectUsersState(state).editing;
-export const selectAddToWorkspacesUserId = (state: RootState) => selectUsersState(state).addToWorkspacesUserId;
+export const selectUsers = (state: RootState) => selectUsersState(state)?.items;
+export const selectUsersLoading = (state: RootState) => selectUsersState(state)?.loading;
+export const selectUsersFilters = (state: RootState) => selectUsersState(state)?.filters;
+export const selectUsersSort = (state: RootState) => selectUsersState(state)?.sort;
+export const selectEditingUser = (state: RootState) => selectUsersState(state)?.editing;
+export const selectAddToWorkspacesUserId = (state: RootState) => selectUsersState(state)?.addToWorkspacesUserId;
