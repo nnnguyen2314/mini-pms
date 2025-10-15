@@ -12,8 +12,11 @@ api.interceptors.request.use((config) => {
   try {
     const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
     if (token) {
-      config.headers = config.headers || {};
-      (config.headers as any).Authorization = `Bearer ${token}`;
+      if (config.headers) {
+        (config.headers as Record<string, unknown>)['Authorization'] = `Bearer ${token}`;
+      } else {
+        config.headers = { Authorization: `Bearer ${token}` } as import('axios').AxiosRequestHeaders;
+      }
     }
   } catch {}
   return config;

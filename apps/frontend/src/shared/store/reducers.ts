@@ -13,7 +13,7 @@ const reducers = combineReducers({
   users: usersReducer,
   workspaces: workspacesReducer,
   projects: projectsReducer,
-}) as any;
+});
 
 export type RootState = ReturnType<typeof reducers>;
 export default reducers;

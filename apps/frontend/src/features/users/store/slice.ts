@@ -51,8 +51,9 @@ export const fetchUsers = createAsyncThunk('users/fetch', async (_, { rejectWith
   try {
     const users = await usersService.list();
     return users;
-  } catch (e: any) {
-    return rejectWithValue(e?.message ?? 'Failed to load users');
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Failed to load users';
+    return rejectWithValue(message);
   }
 });
 

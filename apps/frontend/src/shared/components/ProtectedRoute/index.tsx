@@ -7,7 +7,7 @@ import { selectIsAuthenticated } from '../../../features/auth/store/selectors';
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const hydrated = useSelector((s: any) => s?._persist?.rehydrated);
+  const hydrated = useSelector((s: unknown) => (s as { _persist?: { rehydrated?: boolean } })?._persist?.rehydrated);
   const router = useRouter();
 
   // Wait until redux-persist has rehydrated before making a redirect decision

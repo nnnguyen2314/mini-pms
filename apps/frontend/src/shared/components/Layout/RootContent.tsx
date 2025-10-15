@@ -13,7 +13,7 @@ import { Header } from '@/shared/components/Layout/Header';
 export default function RootContent({ children }: { children: React.ReactNode }) {
     return (
         <Provider store={initStore}>
-            <PersistGate loading={null} persistor={persistedStore as any}>
+            <PersistGate loading={null} persistor={persistedStore}>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     <QueryClientProvider client={queryClient}>

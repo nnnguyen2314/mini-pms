@@ -2,7 +2,7 @@ const AUTH_KEY = 'mini-pm/auth';
 
 export const storage = {
   get<T = unknown>(key: string): T | null {
-    if (typeof window === 'undefined') return null as any;
+    if (typeof window === 'undefined') return null;
     const raw = window.localStorage.getItem(key);
     return raw ? (JSON.parse(raw) as T) : null;
   },

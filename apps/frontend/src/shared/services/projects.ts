@@ -33,7 +33,7 @@ async function list(params?: { name?: string; owner?: string; workspace?: string
 
 // Creating a project is workspace-scoped in the backend
 async function create(payload: Partial<Pick<Project,'name'|'description'|'status'|'workspaceId'|'createdBy'>>) {
-  const { workspaceId, ...rest } = payload || {} as any;
+  const { workspaceId, ...rest } = (payload ?? {}) as Partial<Pick<Project,'name'|'description'|'status'|'workspaceId'|'createdBy'>>;
   if (!workspaceId) throw new Error('workspaceId is required to create a project');
   const { data } = await api.post<Project>(`/workspaces/${workspaceId}/projects`, rest);
   return data;
