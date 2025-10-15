@@ -23,14 +23,16 @@
     "paths": {
       "@/*": ["./src/*"],
       "@mini-pms/shared": ["../../packages/shared"]
-    }
+    },
+    "types": ["jest", "@testing-library/jest-dom", "node"]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "next-env.d.ts",
     "next.config.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "jest.setup.ts"
   ],
   "exclude": [
     "node_modules",
