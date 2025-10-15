@@ -14,7 +14,7 @@
     "db:seed": "node ./dist/utils/run-sql.js db/seed.sql",
     "db:verify": "ts-node src/utils/verify-schema.ts",
     "auth:set-password": "ts-node src/utils/set-password.ts",
-    "db:init": "npm run build && node ./dist/utils/run-sql.js db/mini_pms.sql db/seed.sql",
+    "db:init": "yarn build && node ./dist/utils/run-sql.js db/mini_pms.sql db/seed.sql",
     "db:drop:pms": "node ./dist/utils/run-sql.js db/drop_pms.sql",
     "db:drop:all-schemas": "node ./dist/utils/run-sql.js db/drop_all_schemas.sql",
     "db:drop:users": "node ./dist/utils/run-sql.js db/drop_users.sql",
