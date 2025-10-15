@@ -21,27 +21,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
-
-      - name: Enable corepack (yarn)
-        run: corepack enable
+          cache: 'npm'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Lint
-        run: yarn lint
+        run: npm run lint
 
       - name: Type check
-        run: yarn check-types
+        run: npm run check-types
 
       - name: Build (turborepo)
-        run: yarn build
+        run: npm run build
 
       - name: Frontend unit tests
-        run: |
-          yarn --cwd apps/frontend test --ci --runInBand
+        run: npm exec --workspace=apps/frontend jest -- --config jest.config.mjs --ci --runInBand
 
       - name: Backend build (TypeScript)
-        run: |
-          yarn --cwd apps/backend build
+        run: npm run build --workspace=apps/backend
