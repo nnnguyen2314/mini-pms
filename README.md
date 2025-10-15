@@ -212,3 +212,71 @@ You can also review the code:
 - If SENTRY_DSN is empty, the SDK stays effectively no-op; the app still runs.
 - Sampling: Adjust SENTRY_TRACES_SAMPLE_RATE to control performance event volume.
 - Frontend: If you want browser-side monitoring, add @sentry/nextjs later; current CSP only sets frame-ancestors, so it won’t block Sentry requests. Add connect-src for Sentry domains if you later introduce a restrictive CSP.
+
+
+
+# Docker deployment
+
+Run the full stack with Docker Compose (frontend, backend, nginx, and Postgres):
+
+- Build and start (detached):
+  - yarn deploy:docker
+  - or: docker compose up -d --build
+
+- View logs:
+  - yarn docker:logs
+
+- Stop and remove containers:
+  - yarn docker:down
+
+The stack exposes:
+- Nginx at http://localhost (proxies /api to backend and serves frontend)
+- Backend service on http://localhost:5000 (direct)
+- Frontend service on http://localhost:3000 (direct)
+
+Environment variables can be adjusted in docker-compose.yml. For production, configure a managed Postgres (e.g., AWS RDS) and set DATABASE_URL for the backend service.
+
+# Redis Integration
+
+This project supports Redis for shared refresh token storage (with an in-memory fallback for dev).
+
+- Docker Compose now includes a `redis` service (port 6379). The backend is configured to connect via `REDIS_URL=redis://redis:6379` by default in docker-compose.
+- If running locally without Docker, set one of:
+  - `REDIS_URL=redis://127.0.0.1:6379`
+  - or `REDIS_HOST=127.0.0.1` and `REDIS_PORT=6379`
+
+Notes:
+- When Redis is available, refresh token sessions are stored as JSON keys (refresh:{jti}) with TTLs, and family membership is tracked in a Redis Set (refreshfam:{familyId}) to support family-wide revocation.
+- If Redis is not configured or unavailable, the server falls back to an in-memory Map (suitable for single-process dev only).
+
+
+## Datadog Integration
+
+This project includes optional Datadog integration for monitoring, performance, and logs.
+
+- Frontend (Next.js): Browser RUM + Browser Logs via @datadog/browser-rum and @datadog/browser-logs.
+- Backend (Express/Node): APM tracing with dd-trace, log correlation enabled via log injection.
+
+Enable by setting environment variables:
+
+Frontend (public env vars):
+- NEXT_PUBLIC_DD_CLIENT_TOKEN=your_client_token
+- NEXT_PUBLIC_DD_APPLICATION_ID=your_app_id
+- NEXT_PUBLIC_DD_SITE=datadoghq.com (or datadoghq.eu, us3.datadoghq.com, etc.)
+- NEXT_PUBLIC_DD_SERVICE=mini-pms-frontend
+- NEXT_PUBLIC_DD_ENV=production (or staging, dev)
+- Optional: NEXT_PUBLIC_DD_SAMPLE_RATE=100, NEXT_PUBLIC_DD_REPLAY_SAMPLE_RATE=20, NEXT_PUBLIC_DD_LOGS_SAMPLE_RATE=100
+
+Backend:
+- DD_ENABLED=true (or use DD_TRACE_ENABLED=true)
+- DD_SERVICE=mini-pms-backend
+- DD_ENV=production
+- DD_VERSION=1.0.0
+- DD_AGENT_HOST=host.docker.internal (or your agent host/IP)
+- DD_TRACE_AGENT_PORT=8126 (default)
+- Optional: DD_TRACE_DEBUG=true, DD_PROFILING_ENABLED=true
+
+Notes:
+- Frontend initializer is loaded in app/layout.tsx via app/DatadogInit.tsx and only runs if both client token and application id are set.
+- Backend tracer is initialized at process start via src/datadog.ts imported first in src/index.ts and only activates if DD_ENABLED/ DD_TRACE_ENABLED is true.
+- Backend logging uses morgan JSON to stdout/stderr; with dd-trace logInjection enabled, Datadog can correlate logs and traces if logs are shipped to Datadog.

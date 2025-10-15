@@ -1,3 +1,4 @@
+"use client";
 import ResetPasswordContainer from '../../src/features/auth/containers/ResetPasswordContainer';
 
 export default function Page() {

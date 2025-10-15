@@ -1,3 +1,4 @@
+import './datadog';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -109,7 +110,15 @@ app.use('/uploads', (req, res, next) => {
 app.use('/uploads', express.static(uploadsDir));
 
 // Healthcheck (no auth)
-app.get('/health', (_req, res) => { res.json({ ok: true }); });
+app.get('/health', async (_req, res) => {
+  try {
+    const { redisStatus } = await import('./utils/redis');
+    const status = redisStatus();
+    res.json({ ok: true, redis: status });
+  } catch {
+    res.json({ ok: true });
+  }
+});
 
 // Debug: echo request headers (non-production only)
 if (process.env.NODE_ENV !== 'production') {

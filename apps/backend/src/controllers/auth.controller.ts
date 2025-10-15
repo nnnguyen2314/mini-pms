@@ -25,7 +25,7 @@ export const login: RequestHandler = async (req, res) => {
     const refreshExp = now + 30 * 24 * 60 * 60; // 30 days
     const refreshToken = signRefreshToken({ sub: user.id, email: user.email, name: user.name, jti }, refreshExp - now);
 
-    saveSession({ jti, userId: user.id, familyId, exp: refreshExp });
+    await saveSession({ jti, userId: user.id, familyId, exp: refreshExp });
 
     // Set secure HttpOnly refresh cookie
     res.cookie('refresh_token', refreshToken, refreshCookieOptions());
@@ -41,20 +41,20 @@ export const login: RequestHandler = async (req, res) => {
 
 export const refresh: RequestHandler = async (req, res) => {
   try {
-    purgeExpired();
+    await purgeExpired();
     const token = (req.cookies?.refresh_token as string) || '';
     if (!token) { res.status(401).json({ message: 'No refresh token' }); return; }
     const payload: any = verifyRefreshToken(token);
     if (!payload?.jti || !payload?.sub) { res.status(401).json({ message: 'Invalid refresh token' }); return; }
 
-    const session = getSession(payload.jti);
+    const session = await getSession(payload.jti);
     if (!session) {
       // Possible reuse; revoke the whole family if we can infer it (not available), so just deny
       res.status(401).json({ message: 'Refresh token not found' });
       return;
     }
     if (session.revoked) {
-      revokeFamily(session.familyId);
+      await revokeFamily(session.familyId);
       res.status(401).json({ message: 'Refresh token revoked' });
       return;
     }
@@ -62,11 +62,11 @@ export const refresh: RequestHandler = async (req, res) => {
     if (session.exp <= now) { res.status(401).json({ message: 'Refresh token expired' }); return; }
 
     // Rotation: mark old used and issue new refresh with same familyId but new jti
-    markUsed(session.jti);
+    await markUsed(session.jti);
     const newJti = randomId(16);
     const newExp = now + 30 * 24 * 60 * 60;
     const newRefresh = signRefreshToken({ sub: session.userId, jti: newJti }, newExp - now);
-    saveSession({ jti: newJti, userId: session.userId, familyId: session.familyId, exp: newExp });
+    await saveSession({ jti: newJti, userId: session.userId, familyId: session.familyId, exp: newExp });
 
     // New access token
     const accessToken = signAccessToken({ sub: session.userId });

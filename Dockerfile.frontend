@@ -3,16 +3,23 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Install dependencies
-COPY apps/frontend/package.json apps/frontend/yarn.lock* apps/frontend/package-lock.json* ./
-RUN if [ -f package-lock.json ]; then npm ci; elif [ -f yarn.lock ]; then yarn install --frozen-lockfile; else npm install; fi
+# Prepare workspace-aware installation (monorepo)
+COPY package.json package-lock.json turbo.json ./
+# Copy workspace manifests so npm can resolve local packages
+COPY packages ./packages
+COPY apps/frontend/package.json ./apps/frontend/package.json
 
-# Copy source
-COPY apps/frontend ./
+# Install production dependencies for workspaces (skip devDeps and root)
+ENV NODE_ENV=production
+RUN npm ci --workspaces --include-workspace-root=false --omit=dev
 
-# Build the Next.js app
+# Copy source (frontend app and any shared packages)
+COPY apps/frontend ./apps/frontend
+COPY packages ./packages
+
+# Build the Next.js app (workspace "web")
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build || yarn build
+RUN npm run build -w web || yarn workspace web build
 
 # Runtime stage
 FROM node:20-alpine AS runtime
@@ -20,11 +27,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy built app
+# Copy built workspace and dependencies
 COPY --from=builder /app .
 
 # Expose Next.js port
 EXPOSE 3000
 
-# Start Next.js
-CMD ["npm","run","start"]
+# Start Next.js (workspace "web")
+CMD ["npm","run","start","-w","web"]

@@ -9,9 +9,18 @@
     "start": "next start",
     "lint": "next lint --max-warnings 0",
     "check-types": "tsc --noEmit",
-    "test": "jest --config jest.config.js",
-    "test:e2e": "playwright src/test",
-    "test:all": "jest --config jest.config.js && playwright src/test"
+    "test": "yarn test:unit",
+    "test:unit": "jest --config jest.config.mjs",
+    "test:unit:coverage": "jest --config jest.config.mjs --coverage",
+    "test:e2e": "playwright test",
+    "test:all": "yarn test:unit && yarn test:e2e",
+    "cy:open": "cross-env BABEL_ENV=coverage cypress open",
+    "cy:run": "cross-env BABEL_ENV=coverage cypress run",
+    "cy:run:headed": "cross-env BABEL_ENV=coverage cypress run --headed",
+    "coverage:unit": "yarn test:unit:coverage",
+    "coverage:e2e": "cross-env BABEL_ENV=coverage cypress run",
+    "coverage:report": "node scripts/prepare-coverage.js && nyc report -t .nyc_output --reporter=lcov --reporter=text-summary --report-dir coverage/combined",
+    "test:coverage": "yarn coverage:unit && yarn coverage:e2e && yarn coverage:report"
   },
   "dependencies": {
     "@apollo/client": "^3.12.11",
@@ -30,7 +39,9 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-redux": "^9.2.0",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^6.0.0",
+    "@datadog/browser-rum": "^5.26.0",
+    "@datadog/browser-logs": "^5.26.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
@@ -46,6 +57,12 @@
     "jest-environment-jsdom": "^29.7.0",
     "playwright": "^1.49.1",
     "ts-jest": "^29.2.5",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "@cypress/code-coverage": "^3.13.11",
+    "babel-plugin-istanbul": "^6.1.1",
+    "cross-env": "^7.0.3",
+    "cypress": "^13.15.0",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.9.2"
   }
 }

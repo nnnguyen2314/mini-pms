@@ -1,6 +1,9 @@
-import type { Config } from 'jest';
+/**
+ * Jest configuration in ESM to avoid requiring ts-node for parsing TS config.
+ */
 
-const config: Config = {
+/** @type {import('jest').Config} */
+const config = {
   testEnvironment: 'jsdom',
   roots: ['<rootDir>'],
   testMatch: [
