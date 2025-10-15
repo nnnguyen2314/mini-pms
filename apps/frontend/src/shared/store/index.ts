@@ -1,5 +1,5 @@
-import { AnyAction, configureStore, ThunkDispatch, type PreloadedState } from '@reduxjs/toolkit';
-import { persistStore, persistReducer, type Persistor, type PersistConfig, type PersistPartial } from 'redux-persist';
+import { AnyAction, configureStore, ThunkDispatch } from '@reduxjs/toolkit';
+import { persistStore, persistReducer, type Persistor, type PersistConfig } from 'redux-persist';
 import storage from './storage';
 import reducers, { RootState as ReducersRootState } from '@/shared/store/reducers';
 
@@ -11,12 +11,13 @@ const persistConfig: PersistConfig<ReducersRootState> = {
 export type RootState = ReducersRootState;
 
 // Factory to create a store (optionally with preloaded state) and its persistor
-export function createStore(preloadedState?: PreloadedState<RootState & PersistPartial>) {
+export function createStore(preloadedState?: Partial<RootState>) {
   const reducer = persistReducer<RootState>(persistConfig, reducers);
   const store = configureStore({
     reducer,
     // Preloaded state is useful for tests
-    preloadedState,
+    // Cast to align with persist reducer's PersistPartial; tests may provide partial state without _persist
+    preloadedState: preloadedState as any,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: false,
