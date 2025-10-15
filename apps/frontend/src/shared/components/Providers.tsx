@@ -16,7 +16,7 @@ export default function Providers({ children, initialState }: ProvidersProps) {
   // If an initial state is provided (tests), create a fresh store/persistor pair.
   const dynamic = initialState ? createStore(initialState) : null;
   const store = dynamic?.store ?? initStore;
-  const persistor = dynamic?.persistor ?? (persistedStore as any);
+  const persistor = dynamic?.persistor ?? persistedStore;
 
   return (
     <Provider store={store}>

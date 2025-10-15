@@ -11,8 +11,8 @@ export default function EditProjectModal() {
   const dispatch = useAppDispatch();
   const editing = useAppSelector(selectEditingProject);
   const open = !!editing;
-  const users = useAppSelector<any>(selectUsers as any);
-  const workspaces = useAppSelector<any>(selectWorkspaces as any);
+  const users = useAppSelector(selectUsers);
+  const workspaces = useAppSelector(selectWorkspaces);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [ownerId, setOwnerId] = useState<string>('');

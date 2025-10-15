@@ -13,7 +13,8 @@ export default function StatusModal() {
 
   const onSave = async () => {
     if (!id) return;
-    await dispatch<any>(updateWorkspace({ id, patch: { status: parseInt(value, 10) as any } }));
+    const status = Number(value) as 0|1|2;
+    await dispatch(updateWorkspace({ id, patch: { status } }));
     dispatch(workspacesActions.closeStatusEdit());
   };
 

@@ -101,12 +101,11 @@ describe('workspaces service helpers', () => {
       { s: 1 as const, n: 'Active' },
       { s: 2 as const, n: 'Archived' },
       { s: 0 as const, n: 'Inactive' },
-      { s: null as any, n: 'Unknown' },
-      { s: undefined as any, n: 'Unknown' },
+      { s: null, n: 'Unknown' },
+      { s: undefined, n: 'Unknown' },
     ];
     for (const { s, n } of map) {
-      // @ts-ignore access internal via any to call helper
-      const name = (workspacesService as any).statusToName(s);
+      const name = workspacesService.statusToName(s as unknown as import('@/shared/services/workspaces').WorkspaceStatus | undefined);
       expect(name).toBe(n);
     }
   });

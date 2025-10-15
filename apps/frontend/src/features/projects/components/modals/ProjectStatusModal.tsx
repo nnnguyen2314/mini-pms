@@ -13,7 +13,8 @@ export default function ProjectStatusModal() {
 
   const onSave = async () => {
     if (!id) return;
-    await dispatch<any>(updateProject({ id, patch: { status: parseInt(value, 10) as any } }));
+    const status = Number(value) as 0|1|2;
+    await dispatch(updateProject({ id, patch: { status } }));
     dispatch(projectsActions.closeStatusEdit());
   };
 

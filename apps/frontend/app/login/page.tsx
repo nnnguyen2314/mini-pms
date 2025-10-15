@@ -8,7 +8,7 @@ import LoginContainer from '../../src/features/auth/containers/LoginContainer';
 
 export default function Page() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const hydrated = useSelector((s: any) => s?._persist?.rehydrated);
+  const hydrated = useSelector((s: unknown) => (s as { _persist?: { rehydrated?: boolean } })?._persist?.rehydrated);
   const router = useRouter();
 
   useEffect(() => {
