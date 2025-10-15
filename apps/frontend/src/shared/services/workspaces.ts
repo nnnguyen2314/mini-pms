@@ -26,7 +26,7 @@ async function list(params?: { name?: string; owner?: string; sortBy?: 'name'|'o
   try {
     const { data } = await api.get<ListResponse<Workspace>>('/me/workspaces', { params });
     return data.items;
-  } catch (e: any) {
+  } catch (_e: unknown) {
     // Fallback to /workspaces if /me/workspaces is not available
     const { data } = await api.get<ListResponse<Workspace>>('/workspaces', { params });
     return data.items;

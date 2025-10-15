@@ -63,8 +63,9 @@ export const updateUserStatus = createAsyncThunk(
     try {
       const user = await usersService.updateStatus(userId, status);
       return user;
-    } catch (e: any) {
-      return rejectWithValue(e?.message ?? 'Failed to update status');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to update status';
+      return rejectWithValue(message);
     }
   }
 );
@@ -75,8 +76,9 @@ export const updateUser = createAsyncThunk(
     try {
       const user = await usersService.update(payload);
       return user;
-    } catch (e: any) {
-      return rejectWithValue(e?.message ?? 'Failed to update user');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to update user';
+      return rejectWithValue(message);
     }
   }
 );
@@ -87,8 +89,9 @@ export const addUserToWorkspaces = createAsyncThunk(
     try {
       const user = await usersService.addToWorkspaces(userId, workspaceIds);
       return user;
-    } catch (e: any) {
-      return rejectWithValue(e?.message ?? 'Failed to add to workspaces');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to add to workspaces';
+      return rejectWithValue(message);
     }
   }
 );
