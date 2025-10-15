@@ -54,7 +54,7 @@ export function verifyJwt<T = JwtPayload>(token: string, opts?: { secretEnvVar?:
     if (expected !== s) return null;
     const payload = parseBase64url<T>(p);
     const now = Math.floor(Date.now() / 1000);
-    // @ts-ignore
+    // @ts-expect-error: payload is generic; exp may be absent on T at compile time but is checked safely at runtime
     if (payload.exp && payload.exp < now) return null;
     return payload;
   } catch {
